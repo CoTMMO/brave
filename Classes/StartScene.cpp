@@ -2,6 +2,7 @@
 #include "MainScene.h"
 #include "VisibleRect.h"
 #include "CustomTool.h"
+#include "GameScene.h"
 
 bool StartScene::init()
 {
@@ -34,6 +35,7 @@ Scene* StartScene::createScene()
 void StartScene::onStart(Ref* obj)
 {
 	log("StartLayer::onStart");
-	auto scene = MainScene::createScene();
+	//auto scene = MainScene::createScene();
+	auto scene = GameScene::createScene();
 	Director::getInstance()->replaceScene(scene);
 }
