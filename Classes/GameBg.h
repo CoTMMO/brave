@@ -4,7 +4,7 @@
 
 USING_NS_CC;
 
-class GameBg : public Layer
+class GameBg : public Sprite
 {
 public:
 	bool init();

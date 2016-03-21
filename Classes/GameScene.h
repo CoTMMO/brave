@@ -13,7 +13,6 @@ private:
 	GameBg* _background;
 	Sprite* _role;
 	bool _flip;
-	Vec2 _position;
 	float _speed;
 	EventListenerTouchOneByOne* _listener_touch;
 public:
