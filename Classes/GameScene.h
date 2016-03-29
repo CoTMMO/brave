@@ -20,7 +20,15 @@ public:
 	static Scene* createScene();
 	CREATE_FUNC(GameScene);
 	bool onTouchBegan(Touch* touch, Event* event);
-	void onMove(Ref* obj);
+	void onClose(Ref* obj);
+	void onLeft(Ref* obj);
+	void onRight(Ref* obj);
+	void onGo(Vec2 dest);
+	void onAttack(Ref* obj);
+	void onAttack1(Ref* obj);
+	void onAttack2(Ref* obj);
+	void onAttack3(Ref* obj);
+	void onAttack4(Ref* obj);
 };
 
 #endif

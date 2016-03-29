@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "GameBg.h"
+#include <math.h>
 
 bool GameScene::init()
 {
@@ -21,18 +22,84 @@ bool GameScene::init()
 		_background->setPosition(Vec2(0, 0));
 		this->addChild(_background, 0);
 
-		//按钮
+		//关闭按钮
 		MenuItemImage *pCloseItem = MenuItemImage::create(
-			"CloseNormal.png",
-			"CloseSelected.png",
-			CC_CALLBACK_1(GameScene::onMove, this)
+			"button/button_close.png",
+			"button/button_close.png",
+			CC_CALLBACK_1(GameScene::onClose, this)
 			);
 		CC_BREAK_IF(!pCloseItem);
-		pCloseItem->setPosition(Vec2(visibleSize.width - 20, visibleSize.height - 20));
+		pCloseItem->setPosition(Vec2(visibleSize.width - pCloseItem->getContentSize().width / 2, visibleSize.height - pCloseItem->getContentSize().height / 2));
 		Menu* pMenu1 = Menu::create(pCloseItem, NULL);
 		pMenu1->setPosition(Point::ZERO);
 		CC_BREAK_IF(!pMenu1);
 		this->addChild(pMenu1, 1);
+		//移动按钮
+		MenuItemImage *pLeftButtonItem = MenuItemImage::create(
+			"button/button_go.png",
+			"button/button_go.png",
+			CC_CALLBACK_1(GameScene::onLeft, this)
+			);
+		CC_BREAK_IF(!pLeftButtonItem);
+		pLeftButtonItem->setRotationSkewY(180);
+		pLeftButtonItem->setPosition(Vec2(pLeftButtonItem->getContentSize().width / 2, pLeftButtonItem->getContentSize().height/2));
+		MenuItemImage *pRightButtonItem = MenuItemImage::create(
+			"button/button_go.png",
+			"button/button_go.png",
+			CC_CALLBACK_1(GameScene::onRight, this)
+			);
+		CC_BREAK_IF(!pRightButtonItem);
+		pRightButtonItem->setPosition(Vec2(pRightButtonItem->getContentSize().width * 3 / 2, pRightButtonItem->getContentSize().height / 2));
+		Menu* pMenuGo = Menu::create(pLeftButtonItem, pRightButtonItem, NULL);
+		pMenuGo->setPosition(Point::ZERO);
+		CC_BREAK_IF(!pMenuGo);
+		this->addChild(pMenuGo, 1);
+		//攻击按钮
+		MenuItemImage *pAttackItem = MenuItemImage::create(
+			"button/button_attack.png",
+			"button/button_attack.png",
+			CC_CALLBACK_1(GameScene::onAttack, this)
+			);
+		CC_BREAK_IF(!pAttackItem);
+		pAttackItem->setPosition(Vec2(visibleSize.width - pAttackItem->getContentSize().width / 2, pAttackItem->getContentSize().height / 2));
+
+		MenuItemImage *pAttack1Item = MenuItemImage::create(
+			"button/1001_1.png",
+			"button/1001_1.png",
+			CC_CALLBACK_1(GameScene::onAttack1, this)
+			);
+		CC_BREAK_IF(!pAttack1Item);
+		pAttack1Item->setPosition(Vec2(visibleSize.width - pAttackItem->getContentSize().width - pAttack1Item->getContentSize().width/2, pAttack1Item->getContentSize().height/2));
+
+		MenuItemImage *pAttack2Item = MenuItemImage::create(
+			"button/1001_2.png",
+			"button/1001_2.png",
+			CC_CALLBACK_1(GameScene::onAttack2, this)
+			);
+		CC_BREAK_IF(!pAttack2Item);
+		pAttack2Item->setPosition(Vec2(visibleSize.width - (pAttackItem->getContentSize().width + pAttack2Item->getContentSize().width / 2) * 2 / sqrt(5), (pAttackItem->getContentSize().width + pAttack2Item->getContentSize().width / 2) / sqrt(5) + pAttack2Item->getContentSize().height/3));
+
+
+		MenuItemImage *pAttack3Item = MenuItemImage::create(
+			"button/1001_3.png",
+			"button/1001_3.png",
+			CC_CALLBACK_1(GameScene::onAttack3, this)
+			);
+		CC_BREAK_IF(!pAttack3Item);
+		pAttack3Item->setPosition(Vec2(visibleSize.width - (pAttackItem->getContentSize().width + pAttack3Item->getContentSize().width / 3) / sqrt(5) - pAttack3Item->getContentSize().width/2, (pAttackItem->getContentSize().width + pAttack3Item->getContentSize().width / 2) * 2 / sqrt(5)));
+
+		MenuItemImage *pAttack4Item = MenuItemImage::create(
+			"button/1001_4.png",
+			"button/1001_4.png",
+			CC_CALLBACK_1(GameScene::onAttack4, this)
+			);
+		CC_BREAK_IF(!pAttack4Item);
+		pAttack4Item->setPosition(Vec2(visibleSize.width - pAttack4Item->getContentSize().width/2, pAttackItem->getContentSize().height + pAttack4Item->getContentSize().height/2));
+
+		Menu* pMenuAttack = Menu::create(pAttackItem, pAttack1Item, pAttack2Item, pAttack3Item, pAttack4Item, NULL);
+		pMenuAttack->setPosition(Point::ZERO);
+		CC_BREAK_IF(!pMenuAttack);
+		this->addChild(pMenuAttack, 1);
 
 		//预加载动画
 		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("roleanimate/1001_effup.plist", "roleanimate/1001_effup.png");
@@ -71,7 +138,7 @@ bool GameScene::init()
 
 		//_role = Sprite::create("CloseNormal.png");
 		_role = Sprite::createWithSpriteFrameName("player1-1-1.png");
-		_role->setPosition(Vec2(0, 0));
+		_role->setPosition(Vec2(_role->getContentSize().width, visibleSize.height*2/5));
 		_flip = true;
 		_role->runAction(animate2);
 		this->addChild(_role, 2);
@@ -116,10 +183,16 @@ void GameScene::onExit()
 
 bool GameScene::onTouchBegan(Touch* touch, Event* event)
 {
+	Vec2 dest = this->convertToNodeSpace(touch->getLocation());
+	this->onGo(dest);
+	return true;
+}
+
+void GameScene::onGo(Vec2 dest)
+{
 	_role->stopActionByTag(1);
 	_background->stopActionByTag(1);
 
-	Vec2 dest = this->convertToNodeSpace(touch->getLocation());
 	auto curPos = _role->getPosition();
 
 	//改变面向
@@ -155,7 +228,7 @@ bool GameScene::onTouchBegan(Touch* touch, Event* event)
 		}
 		else{
 			_role_dest = Vec2(visibleSize.width / 2, dest.y);
-			_bg_dest = Vec2(_background->getPositionX()-(_db-visibleSize.width/2), 0);
+			_bg_dest = Vec2(_background->getPositionX() - (_db - visibleSize.width / 2), 0);
 			log("position:l m");
 		}
 
@@ -167,19 +240,19 @@ bool GameScene::onTouchBegan(Touch* touch, Event* event)
 		}
 		else{
 			_role_dest = Vec2(visibleSize.width / 2, dest.y);
-			_bg_dest = Vec2(_background->getPositionX()+((_background->getContentSize().width-visibleSize.width/2)-_db), 0);
+			_bg_dest = Vec2(_background->getPositionX() + ((_background->getContentSize().width - visibleSize.width / 2) - _db), 0);
 			log("position:r m");
 		}
 	}
 	else{
 		if (_db<visibleSize.width / 2){
 			_role_dest = Vec2(_db, dest.y);
-			_bg_dest = Vec2(_background->getPositionX() + (_rb - visibleSize.width/2), 0);
+			_bg_dest = Vec2(_background->getPositionX() + (_rb - visibleSize.width / 2), 0);
 			log("position:m l");
 		}
 		else if (_db>(_background->getContentSize().width - visibleSize.width / 2)){
 			_role_dest = Vec2(_db - (_background->getContentSize().width - visibleSize.width), dest.y);
-			_bg_dest = Vec2(_background->getPositionX() - ((_background->getContentSize().width - visibleSize.width / 2)-_rb), 0);
+			_bg_dest = Vec2(_background->getPositionX() - ((_background->getContentSize().width - visibleSize.width / 2) - _rb), 0);
 			log("position:m r");
 		}
 		else{
@@ -211,16 +284,44 @@ bool GameScene::onTouchBegan(Touch* touch, Event* event)
 		seq2->setTag(1);
 		_background->runAction(seq2);
 	}
-
-
-
-	return true;
 }
 
-void GameScene::onMove(Ref* obj)
+void GameScene::onClose(Ref* obj)
 {
-	Size visibleSize = CCDirector::getInstance()->getVisibleSize();
-	Point origin = CCDirector::getInstance()->getVisibleOrigin();
-	_background->setPositionX(_background->getPositionX() - 50);
-	log("GameScene::onRight");
+	Director::getInstance()->end();
+}
+void GameScene::onLeft(Ref* obj)
+{
+	float _rb = _role->getPositionX() - _background->getPositionX()-100;
+	if (_rb > 0){
+		this->onGo(Vec2(_role->getPositionX() - 100, _role->getPositionY()));
+	}
+}
+void GameScene::onRight(Ref* obj)
+{
+	float _rb = _role->getPositionX() - _background->getPositionX() + 100;
+	if (_rb < _background->getContentSize().width){
+		this->onGo(Vec2(_role->getPositionX() + 100, _role->getPositionY()));
+	}
+}
+
+void GameScene::onAttack(Ref* obj)
+{
+	log("onAttack");
+}
+void GameScene::onAttack1(Ref* obj)
+{
+	log("onAttack1");
+}
+void GameScene::onAttack2(Ref* obj)
+{
+	log("onAttack2");
+}
+void GameScene::onAttack3(Ref* obj)
+{
+	log("onAttack3");
+}
+void GameScene::onAttack4(Ref* obj)
+{
+	log("onAttack4");
 }
