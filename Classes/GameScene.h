@@ -15,6 +15,7 @@ private:
 	bool _flip;
 	float _speed;
 	EventListenerTouchOneByOne* _listener_touch;
+	Sprite* _circle;
 public:
 	bool init();
 	static Scene* createScene();

@@ -107,6 +107,23 @@ bool GameScene::init()
 		CC_BREAK_IF(!pMenuAttack);
 		this->addChild(pMenuAttack, 1);
 
+		//点击动画
+		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("effect/click_role.plist", "effect/click_role.png");
+		auto animation = Animation::create();
+		animation->setDelayPerUnit(0.05f);
+		for (int j = 0; j < 12; j++){
+			auto sfName = String::createWithFormat("click_role/%04d", j)->getCString();
+			log(sfName);
+			auto sf = SpriteFrameCache::getInstance()->getSpriteFrameByName(sfName);
+			animation->addSpriteFrame(sf);
+		}
+		AnimationCache::getInstance()->addAnimation(animation, String::create("click_role")->getCString());
+		//
+		_circle = Sprite::createWithSpriteFrameName("click_role/0000");
+		_circle->setVisible(false);
+		this->addChild(_circle);
+		
+
 		//预加载动画
 		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("roleanimate/1001_effup.plist", "roleanimate/1001_effup.png");
 		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("roleanimate/1001_role.plist", "roleanimate/1001_role.png");
@@ -137,6 +154,7 @@ bool GameScene::init()
 		AnimationCache::getInstance()->addAnimation(animation2, String::create("1001_role_walk")->getCString());
 		AnimationCache::getInstance()->addAnimation(animation3, String::create("1001_role_attack")->getCString());
 
+		//角色加载
 		_role = Sprite::createWithSpriteFrameName("1001_role/0040");
 		_role->setContentSize(Size(125,150));
 		_role->setAnchorPoint(Vec2(0.5,0.5));
@@ -144,6 +162,7 @@ bool GameScene::init()
 		_flip = true;
 		this->addChild(_role, 2);
 
+		//点击操作
 		_listener_touch = EventListenerTouchOneByOne::create();
 		_listener_touch->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
 		_eventDispatcher->addEventListenerWithSceneGraphPriority(_listener_touch, this);
@@ -186,6 +205,21 @@ bool GameScene::onTouchBegan(Touch* touch, Event* event)
 {
 	Vec2 dest = this->convertToNodeSpace(touch->getLocation());
 	//this->onGo(dest);
+
+	_circle->stopAllActions();
+	auto animation = AnimationCache::getInstance()->getAnimation(String::create("click_role")->getCString());
+	auto animate = Animate::create(animation);
+	auto func = [&]()
+	{
+		_circle->stopAllActions();
+		_circle->setVisible(false);
+	};
+	auto callback = CallFunc::create(func);
+	auto seq = Sequence::create(animate, callback, nullptr);
+	_circle->setPosition(dest);
+	_circle->setVisible(true);
+	_circle->runAction(seq);
+
 	return true;
 }
 
