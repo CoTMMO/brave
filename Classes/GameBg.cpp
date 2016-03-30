@@ -12,9 +12,12 @@ bool GameBg::init()
 		Size visibleSize = Director::getInstance()->getVisibleSize();
 		Point origin = Director::getInstance()->getVisibleOrigin();
 
-		Sprite* map1 = Sprite::create("image/bg1.png");
-		Sprite* map2 = Sprite::create("image/bg2.png");
-		Sprite* map3 = Sprite::create("image/bg3.png");
+		Sprite* map1 = Sprite::create("scene/bg_2.png");
+		map1->setScale(visibleSize.height * 2 / 5 / map1->getContentSize().height);
+		Sprite* map2 = Sprite::create("scene/bg_2.png");
+		map2->setScale(visibleSize.height * 2 / 5 / map2->getContentSize().height);
+		Sprite* map3 = Sprite::create("scene/bg_2.png");
+		map3->setScale(visibleSize.height * 2 / 5 / map3->getContentSize().height);
 		this->setContentSize(Size(map1->getContentSize().width + map2->getContentSize().width + map3->getContentSize().width, map1->getContentSize().height));
 		map1->setAnchorPoint(Vec2(0, 0));
 		map2->setAnchorPoint(Vec2(0, 0));

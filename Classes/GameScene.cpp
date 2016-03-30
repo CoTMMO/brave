@@ -22,6 +22,12 @@ bool GameScene::init()
 		_background->setPosition(Vec2(0, 0));
 		this->addChild(_background, 0);
 
+		Sprite* map = Sprite::create("scene/bg_1.png");
+		map->setScale(visibleSize.height * 4 / 5 / map->getContentSize().height);
+		map->setAnchorPoint(Vec2(0, 1));
+		map->setPosition(Vec2(0, visibleSize.height));
+		this->addChild(map, -1);
+
 		//关闭按钮
 		MenuItemImage *pCloseItem = MenuItemImage::create(
 			"button/button_close.png",
@@ -106,41 +112,36 @@ bool GameScene::init()
 		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("roleanimate/1001_role.plist", "roleanimate/1001_role.png");
 		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("image/role.plist", "image/role.pvr.ccz");
 		auto animation1 = Animation::create();
-		animation1->setDelayPerUnit(0.1f);
+		animation1->setDelayPerUnit(0.05f);
 		auto animation2 = Animation::create();
-		animation2->setDelayPerUnit(0.1f);
+		animation2->setDelayPerUnit(0.05f);
 		auto animation3 = Animation::create();
-		animation3->setDelayPerUnit(0.2f);
-		for (int j = 40; j < 60; j++){
+		animation3->setDelayPerUnit(0.05f);
+		for (int j = 40; j < 69; j++){
 		//for (int j = 0; j < 439; j++){
-			auto sfName = String::createWithFormat("1001_effup/%04d", j)->getCString();
-			auto sf = SpriteFrameCache::getInstance()->getSpriteFrameByName(sfName);
-			animation1->addSpriteFrame(sf);
-
 			auto sfName2 = String::createWithFormat("1001_role/%04d", j)->getCString();
 			auto sf2 = SpriteFrameCache::getInstance()->getSpriteFrameByName(sfName2);
 			animation2->addSpriteFrame(sf2);
 		}
-		for (int j = 0; j < 4; j++)
+		for (int j = 69; j < 260; j++)
 		{
-			auto sfName3 = String::createWithFormat("%s-%d-%d.png", "player1", 1, j + 1)->getCString();
+			auto sfName1 = String::createWithFormat("1001_effup/%04d", j)->getCString();
+			auto sf1 = SpriteFrameCache::getInstance()->getSpriteFrameByName(sfName1);
+			animation1->addSpriteFrame(sf1);
+
+			auto sfName3 = String::createWithFormat("1001_role/%04d", j)->getCString();
 			auto sf3 = SpriteFrameCache::getInstance()->getSpriteFrameByName(sfName3);
 			animation3->addSpriteFrame(sf3);
 		}
-		AnimationCache::getInstance()->addAnimation(animation1, String::create("1001_effup")->getCString());
-		AnimationCache::getInstance()->addAnimation(animation2, String::create("1001_role")->getCString());
-		AnimationCache::getInstance()->addAnimation(animation3, "player1");
+		AnimationCache::getInstance()->addAnimation(animation1, String::create("1001_effup_attack")->getCString());
+		AnimationCache::getInstance()->addAnimation(animation2, String::create("1001_role_walk")->getCString());
+		AnimationCache::getInstance()->addAnimation(animation3, String::create("1001_role_attack")->getCString());
 
-		//获取动画
-		//auto animation2 = AnimationCache::getInstance()->getAnimation(String::create("1001_role")->getCString());
-		auto animate2 = RepeatForever::create(Animate::create(animation3));
-		animate2->setTag(2);
-
-		//_role = Sprite::create("CloseNormal.png");
-		_role = Sprite::createWithSpriteFrameName("player1-1-1.png");
-		_role->setPosition(Vec2(_role->getContentSize().width, visibleSize.height*2/5));
+		_role = Sprite::createWithSpriteFrameName("1001_role/0040");
+		_role->setContentSize(Size(125,150));
+		_role->setAnchorPoint(Vec2(0.5,0.5));
+		_role->setPosition(origin+Vec2(_role->getContentSize().width, visibleSize.height * 2 / 5));
 		_flip = true;
-		_role->runAction(animate2);
 		this->addChild(_role, 2);
 
 		_listener_touch = EventListenerTouchOneByOne::create();
@@ -184,13 +185,14 @@ void GameScene::onExit()
 bool GameScene::onTouchBegan(Touch* touch, Event* event)
 {
 	Vec2 dest = this->convertToNodeSpace(touch->getLocation());
-	this->onGo(dest);
+	//this->onGo(dest);
 	return true;
 }
 
 void GameScene::onGo(Vec2 dest)
 {
 	_role->stopActionByTag(1);
+	_role->stopActionByTag(2);
 	_background->stopActionByTag(1);
 
 	auto curPos = _role->getPosition();
@@ -262,10 +264,16 @@ void GameScene::onGo(Vec2 dest)
 		}
 	}
 
+	//获取动画
+	auto animation2 = AnimationCache::getInstance()->getAnimation(String::create("1001_role_walk")->getCString());
+	auto animate2 = RepeatForever::create(Animate::create(animation2));
+	animate2->setTag(2);
+	_role->runAction(animate2);
 	if (_role_dest != _role->getPosition()){
 		auto move = MoveTo::create(time, _role_dest);
 		auto func = [&]()
 		{
+			_role->stopAllActions();
 			log("move role ok");
 		};
 		auto callback = CallFunc::create(func);
@@ -292,36 +300,46 @@ void GameScene::onClose(Ref* obj)
 }
 void GameScene::onLeft(Ref* obj)
 {
-	float _rb = _role->getPositionX() - _background->getPositionX()-100;
+	float _rb = _role->getPositionX() - _background->getPositionX()-200;
 	if (_rb > 0){
-		this->onGo(Vec2(_role->getPositionX() - 100, _role->getPositionY()));
+		this->onGo(Vec2(_role->getPositionX() - 200, _role->getPositionY()));
 	}
 }
 void GameScene::onRight(Ref* obj)
 {
-	float _rb = _role->getPositionX() - _background->getPositionX() + 100;
+	float _rb = _role->getPositionX() - _background->getPositionX() + 200;
 	if (_rb < _background->getContentSize().width){
-		this->onGo(Vec2(_role->getPositionX() + 100, _role->getPositionY()));
+		this->onGo(Vec2(_role->getPositionX() + 200, _role->getPositionY()));
 	}
 }
 
 void GameScene::onAttack(Ref* obj)
 {
+	_role->stopAllActions();
+	//获取动画
+	auto animation3 = AnimationCache::getInstance()->getAnimation(String::create("1001_role_attack")->getCString());
+	auto animate3 = Animate::create(animation3);
+	animate3->setTag(3);
+	_role->runAction(animate3);
 	log("onAttack");
 }
 void GameScene::onAttack1(Ref* obj)
 {
+	this->onAttack(obj);
 	log("onAttack1");
 }
 void GameScene::onAttack2(Ref* obj)
 {
+	this->onAttack(obj);
 	log("onAttack2");
 }
 void GameScene::onAttack3(Ref* obj)
 {
+	this->onAttack(obj);
 	log("onAttack3");
 }
 void GameScene::onAttack4(Ref* obj)
 {
+	this->onAttack(obj);
 	log("onAttack4");
 }
