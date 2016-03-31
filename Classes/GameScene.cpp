@@ -20,13 +20,13 @@ bool GameScene::init()
 		_background = GameBg::create();
 		_background->setAnchorPoint(Vec2(0, 0));
 		_background->setPosition(Vec2(0, 0));
-		this->addChild(_background, 0);
+		this->addChild(_background, -1);
 
 		Sprite* map = Sprite::create("scene/bg_1.png");
 		map->setScale(visibleSize.height * 4 / 5 / map->getContentSize().height);
 		map->setAnchorPoint(Vec2(0, 1));
 		map->setPosition(Vec2(0, visibleSize.height));
-		this->addChild(map, -1);
+		this->addChild(map, -2);
 
 		//关闭按钮
 		MenuItemImage *pCloseItem = MenuItemImage::create(
@@ -121,7 +121,7 @@ bool GameScene::init()
 		//
 		_circle = Sprite::createWithSpriteFrameName("click_role/0000");
 		_circle->setVisible(false);
-		this->addChild(_circle);
+		this->addChild(_circle,2);
 		
 
 		//预加载动画
@@ -156,11 +156,11 @@ bool GameScene::init()
 
 		//角色加载
 		_role = Sprite::createWithSpriteFrameName("1001_role/0040");
-		_role->setContentSize(Size(125,150));
-		_role->setAnchorPoint(Vec2(0.5,0.5));
-		_role->setPosition(origin+Vec2(_role->getContentSize().width, visibleSize.height * 2 / 5));
+		//_role->setContentSize(_role->getTextureRect().size);
+		//_role->setAnchorPoint(Point(0.5, 0.5));
+		_role->setPosition(Point(_role->getTextureRect().size.width, (visibleSize.height * 2 / 5)));
 		_flip = true;
-		this->addChild(_role, 2);
+		this->addChild(_role, 10);
 
 		//点击操作
 		_listener_touch = EventListenerTouchOneByOne::create();
@@ -204,6 +204,7 @@ void GameScene::onExit()
 bool GameScene::onTouchBegan(Touch* touch, Event* event)
 {
 	Vec2 dest = this->convertToNodeSpace(touch->getLocation());
+	log("log click:%f,%f", dest.x,dest.y);
 	//this->onGo(dest);
 
 	_circle->stopAllActions();
