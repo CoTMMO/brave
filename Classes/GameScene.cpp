@@ -113,7 +113,6 @@ bool GameScene::init()
 		animation->setDelayPerUnit(0.05f);
 		for (int j = 0; j < 12; j++){
 			auto sfName = String::createWithFormat("click_role/%04d", j)->getCString();
-			log(sfName);
 			auto sf = SpriteFrameCache::getInstance()->getSpriteFrameByName(sfName);
 			animation->addSpriteFrame(sf);
 		}
@@ -134,13 +133,13 @@ bool GameScene::init()
 		animation2->setDelayPerUnit(0.05f);
 		auto animation3 = Animation::create();
 		animation3->setDelayPerUnit(0.05f);
-		for (int j = 40; j < 69; j++){
+		for (int j = 34; j <= 65; j++){
 		//for (int j = 0; j < 439; j++){
 			auto sfName2 = String::createWithFormat("1001_role/%04d", j)->getCString();
 			auto sf2 = SpriteFrameCache::getInstance()->getSpriteFrameByName(sfName2);
 			animation2->addSpriteFrame(sf2);
 		}
-		for (int j = 69; j < 260; j++)
+		for (int j = 66; j <= 195; j++)
 		{
 			auto sfName1 = String::createWithFormat("1001_effup/%04d", j)->getCString();
 			auto sf1 = SpriteFrameCache::getInstance()->getSpriteFrameByName(sfName1);
