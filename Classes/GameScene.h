@@ -30,6 +30,7 @@ public:
 	void onAttack2(Ref* obj);
 	void onAttack3(Ref* obj);
 	void onAttack4(Ref* obj);
+	void onIdle();
 };
 
 #endif
