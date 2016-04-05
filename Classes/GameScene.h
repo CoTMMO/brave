@@ -12,6 +12,7 @@ private:
 	virtual void onExit();
 	GameBg* _background;
 	Sprite* _role;
+	Sprite* _effup;
 	bool _flip;
 	float _speed;
 	EventListenerTouchOneByOne* _listener_touch;

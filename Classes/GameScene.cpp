@@ -14,8 +14,8 @@ bool GameScene::init()
 
 		_speed = 400;
 
-		Size visibleSize = CCDirector::getInstance()->getVisibleSize();
-		Point origin = CCDirector::getInstance()->getVisibleOrigin();
+		Size visibleSize = Director::getInstance()->getVisibleSize();
+		Point origin = Director::getInstance()->getVisibleOrigin();
 
 		//背景
 		_background = GameBg::create();
@@ -130,28 +130,31 @@ bool GameScene::init()
 
 
 		//角色加载
-		_role = Sprite::createWithSpriteFrameName("1001_role/0040");
+		//_role = Sprite::createWithSpriteFrameName("1001_role/0040");
+		_role = Sprite::create("roleanimate/1001_role_0000.jpg");
 		//_role->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
-		//_role->setAnchorPoint(Vec2(0.5, 0.5));
-		_role->setPosition(Vec2(_role->getTextureRect().size.width, (visibleSize.height * 2 / 5)));
+		_role->setAnchorPoint(Vec2(0.5, 0.5));
+		_role->setPosition(Vec2(_role->getContentSize().width, (visibleSize.height * 2 / 5)));
 		log("_role size:%f,%f", _role->getContentSize().width, _role->getContentSize().height);
 		log("_role position:%f,%f",_role->getPositionX(),_role->getPositionY());
 		_flip = true;
 		this->addChild(_role, 10);
 
-		auto _effup = Sprite::createWithSpriteFrameName("1001_effup/0040");
+		//auto _effup = Sprite::createWithSpriteFrameName("1001_effup/0040");
+		_effup = Sprite::create("roleanimate/1001_effup_0000.jpg");
 		_effup->setName("effup");
 		//_effup->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
-		//_effup->setAnchorPoint(Vec2(0.5, 0.5));
-		_effup->setPosition(Vec2(_role->getContentSize().width / 2, (visibleSize.height * 2 / 5)));
+		_effup->setAnchorPoint(Vec2(0.5, 0.5));
+		_effup->setPosition(Vec2(visibleSize.width / 2, (visibleSize.height * 2 / 5)));
 		log("_effup size:%f,%f", _effup->getContentSize().width, _effup->getContentSize().height);
 		log("_effup position:%f,%f", _role->getPositionX(), _role->getPositionY());
 		_role->addChild(_effup);
 
 		LabelTTF *_label = LabelTTF::create("skynet", "Consolas", 30);
 		//_label->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
-		//_label->setAnchorPoint(Vec2(0.5, 0.5));
-		_label->setPosition(_role->getContentSize().width / 2, (visibleSize.height * 2 / 5) + _role->getTextureRect().size.height/2);
+		_label->setAnchorPoint(Vec2(0.5, 0.5));
+		//_label->setPosition(_role->getContentSize().width / 2, (visibleSize.height * 2 / 5) + _role->getContentSize().height);
+		_label->setPosition(visibleSize.width / 2, (visibleSize.height * 2 / 5) + _role->getContentSize().height);
 		log("_label size:%f,%f", _label->getContentSize().width, _label->getContentSize().height);
 		log("_label position:%f,%f", _label->getPositionX(), _label->getPositionY());
 		_label->setName("label");
@@ -244,6 +247,7 @@ void GameScene::onGo(Vec2 dest)
 		//log("chang to left");
 		_flip = false;
 		_role->setFlippedX(true);
+		_effup->setFlippedX(true);
 		//_role->getChildByName("effup")->setFlippedX(true);
 	}
 	else if (curPos.x < dest.x && !_flip)
@@ -251,6 +255,7 @@ void GameScene::onGo(Vec2 dest)
 		//log("chang to right");
 		_flip = true;
 		_role->setFlippedX(false);
+		_effup->setFlippedX(false);
 		//_role->getChildByName("effup")->setFlippedX(false);
 	}
 	//log("_flip:%d", _flip);
