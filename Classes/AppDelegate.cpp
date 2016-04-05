@@ -19,6 +19,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     if(!glview) {
         //glview = GLView::create("Brave C++ version");
 		glview = GLViewImpl::createWithRect("brave", Rect(0, 0, 960, 640));
+		glview->setDesignResolutionSize(960, 640, ResolutionPolicy::NO_BORDER);
         director->setOpenGLView(glview);
     }
 

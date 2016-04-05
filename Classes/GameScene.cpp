@@ -131,16 +131,33 @@ bool GameScene::init()
 
 		//角色加载
 		_role = Sprite::createWithSpriteFrameName("1001_role/0040");
-		_role->setPosition(Point(_role->getTextureRect().size.width, (visibleSize.height * 2 / 5)));
+		//_role->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
+		//_role->setAnchorPoint(Vec2(0.5, 0.5));
+		_role->setPosition(Vec2(_role->getTextureRect().size.width, (visibleSize.height * 2 / 5)));
+		log("_role size:%f,%f", _role->getContentSize().width, _role->getContentSize().height);
+		log("_role position:%f,%f",_role->getPositionX(),_role->getPositionY());
+		_flip = true;
+		this->addChild(_role, 10);
 
 		auto _effup = Sprite::createWithSpriteFrameName("1001_effup/0040");
 		_effup->setName("effup");
-		_effup->setPosition(Vec2(0,0));
+		//_effup->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
+		//_effup->setAnchorPoint(Vec2(0.5, 0.5));
+		_effup->setPosition(Vec2(_role->getContentSize().width / 2, (visibleSize.height * 2 / 5)));
+		log("_effup size:%f,%f", _effup->getContentSize().width, _effup->getContentSize().height);
+		log("_effup position:%f,%f", _role->getPositionX(), _role->getPositionY());
 		_role->addChild(_effup);
 
-		_flip = true;
+		LabelTTF *_label = LabelTTF::create("skynet", "Consolas", 30);
+		//_label->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
+		//_label->setAnchorPoint(Vec2(0.5, 0.5));
+		_label->setPosition(_role->getContentSize().width / 2, (visibleSize.height * 2 / 5) + _role->getTextureRect().size.height);
+		log("_label size:%f,%f", _label->getContentSize().width, _label->getContentSize().height);
+		log("_label position:%f,%f", _label->getPositionX(), _label->getPositionY());
+		_label->setName("label");
+		_role->addChild(_label);
+
 		this->onIdle();//角色idle动画
-		this->addChild(_role, 10);
 
 		//点击操作
 		_listener_touch = EventListenerTouchOneByOne::create();
@@ -169,7 +186,8 @@ Scene* GameScene::createScene()
 
 void GameScene::update(float time)
 {
-	_role->getChildByName("effup")->setPosition(_role->getPosition());
+	//_role->getChildByName("effup")->setPosition(_role->getPosition());
+	//_role->getChildByName("label")->setPosition(_role->getPosition());
 }
 
 void GameScene::onExit()
@@ -226,12 +244,14 @@ void GameScene::onGo(Vec2 dest)
 		//log("chang to left");
 		_flip = false;
 		_role->setFlippedX(true);
+		//_role->getChildByName("effup")->setFlippedX(true);
 	}
 	else if (curPos.x < dest.x && !_flip)
 	{
 		//log("chang to right");
 		_flip = true;
 		_role->setFlippedX(false);
+		//_role->getChildByName("effup")->setFlippedX(false);
 	}
 	//log("_flip:%d", _flip);
 
