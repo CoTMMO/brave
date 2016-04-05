@@ -151,7 +151,7 @@ bool GameScene::init()
 		LabelTTF *_label = LabelTTF::create("skynet", "Consolas", 30);
 		//_label->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
 		//_label->setAnchorPoint(Vec2(0.5, 0.5));
-		_label->setPosition(_role->getContentSize().width / 2, (visibleSize.height * 2 / 5) + _role->getTextureRect().size.height);
+		_label->setPosition(_role->getContentSize().width / 2, (visibleSize.height * 2 / 5) + _role->getTextureRect().size.height/2);
 		log("_label size:%f,%f", _label->getContentSize().width, _label->getContentSize().height);
 		log("_label position:%f,%f", _label->getPositionX(), _label->getPositionY());
 		_label->setName("label");
