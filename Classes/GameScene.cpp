@@ -26,7 +26,7 @@ bool GameScene::init()
 		Sprite* map = Sprite::create("scene/bg_1.png");
 		map->setScale(visibleSize.height * 4 / 5 / map->getContentSize().height);
 		map->setAnchorPoint(Vec2(0, 1));
-		map->setPosition(Vec2(0, visibleSize.height));
+		map->setPosition(Vec2(0, origin.y + visibleSize.height));
 		this->addChild(map, -2);
 
 		//关闭按钮
@@ -130,22 +130,21 @@ bool GameScene::init()
 
 
 		//角色加载
-		//_role = Sprite::createWithSpriteFrameName("1001_role/0040");
-		_role = Sprite::create("roleanimate/1001_role_0000.jpg");
+		_role = Sprite::createWithSpriteFrameName("1001_role/0040");
+		//_role = Sprite::create("roleanimate/1001_role_0000.jpg");
 		//_role->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
 		_role->setAnchorPoint(Vec2(0.5, 0.5));
-		_role->setPosition(Vec2(_role->getContentSize().width, (visibleSize.height * 2 / 5)));
+		_role->setPosition(Vec2(_role->getContentSize().width/2, (origin.y + visibleSize.height * 2 / 5)));
 		log("_role size:%f,%f", _role->getContentSize().width, _role->getContentSize().height);
 		log("_role position:%f,%f",_role->getPositionX(),_role->getPositionY());
 		_flip = true;
 		this->addChild(_role, 10);
 
-		//auto _effup = Sprite::createWithSpriteFrameName("1001_effup/0040");
-		_effup = Sprite::create("roleanimate/1001_effup_0000.jpg");
+		_effup = Sprite::createWithSpriteFrameName("1001_effup/0040");
+		//_effup = Sprite::create("roleanimate/1001_effup_0000.jpg");
 		_effup->setName("effup");
-		//_effup->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
 		_effup->setAnchorPoint(Vec2(0.5, 0.5));
-		_effup->setPosition(Vec2(visibleSize.width / 2, (visibleSize.height * 2 / 5)));
+		_effup->setPosition(Vec2(_role->getContentSize().width / 2, _role->getContentSize().height / 2-60));
 		log("_effup size:%f,%f", _effup->getContentSize().width, _effup->getContentSize().height);
 		log("_effup position:%f,%f", _role->getPositionX(), _role->getPositionY());
 		_role->addChild(_effup);
@@ -153,14 +152,14 @@ bool GameScene::init()
 		LabelTTF *_label = LabelTTF::create("skynet", "Consolas", 30);
 		//_label->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
 		_label->setAnchorPoint(Vec2(0.5, 0.5));
-		//_label->setPosition(_role->getContentSize().width / 2, (visibleSize.height * 2 / 5) + _role->getContentSize().height);
-		_label->setPosition(visibleSize.width / 2, (visibleSize.height * 2 / 5) + _role->getContentSize().height);
+		_label->setPosition(_role->getContentSize().width / 2, (visibleSize.height * 2 / 5)+100);
+		//_label->setPosition(origin.x + _role->getContentSize().width / 2, (origin.y + visibleSize.height * 2 / 5) + _role->getContentSize().height);
 		log("_label size:%f,%f", _label->getContentSize().width, _label->getContentSize().height);
 		log("_label position:%f,%f", _label->getPositionX(), _label->getPositionY());
 		_label->setName("label");
 		_role->addChild(_label);
 
-		this->onIdle();//角色idle动画
+		//this->onIdle();//角色idle动画
 
 		//点击操作
 		_listener_touch = EventListenerTouchOneByOne::create();

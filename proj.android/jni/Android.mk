@@ -4,6 +4,8 @@ include $(CLEAR_VARS)
 
 #cd /cygdrive/d/cocos2dx_example/workplace/brave/proj.android/ && /cygdrive/c/Cocos/frameworks/android-ndk-windows/android-ndk-r10d/ndk-build NDK_PROJECT_PATH=. NDK_APPLICATION_MK=./jni/Application.mk NDK_MODULE_PATH=/cygdrive/c/Cocos/frameworks/cocos2d-x-3.8.1/
 
+#cd /cygdrive/d/cocos2dx/workspace/brave/proj.android && /cygdrive/c/Cocos/environment/android-ndk-r10d-windows/android-ndk-r10d/ndk-build NDK_PROJECT_PATH=. NDK_APPLICATION_MK=./jni/Application.mk NDK_MODULE_PATH=/cygdrive/c/Cocos/frameworks/cocos2d-x-3.8.1/
+
 LOCAL_MODULE := cocos2dcpp_shared
 
 LOCAL_MODULE_FILENAME := libcocos2dcpp
