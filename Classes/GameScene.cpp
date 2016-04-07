@@ -10,7 +10,6 @@ bool GameScene::init()
 	{
 		if (!Layer::init())
 			return false;
-		log("Game::init");
 
 		_speed = 400;
 
@@ -100,11 +99,12 @@ bool GameScene::init()
 
 		189-232 技能一挑砍
 		233-265 技能二地震
-		266-331 技能三旋转
-		332-388 技能四插地
+		266-339 技能三旋转
+		340-388 技能四插地,其中350-388特效独立
 		*/
 
 		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("roleanimate/1001_effup.plist", "roleanimate/1001_effup.png");
+		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("roleanimate/garen_R_effup.plist", "roleanimate/garen_R_effup.png");
 		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("roleanimate/1001_role.plist", "roleanimate/1001_role.png");
 		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("image/role.plist", "image/role.pvr.ccz");
 
@@ -121,45 +121,35 @@ bool GameScene::init()
 		CustomTool::createAnimation("1001_role_attack2", "1001_role/%04d", 233, 265, 0.05f);
 		CustomTool::createAnimation("1001_effup_attack2", "1001_effup/%04d", 233, 265, 0.05f);
 
-		CustomTool::createAnimation("1001_role_attack3", "1001_role/%04d", 266, 331, 0.05f);
-		CustomTool::createAnimation("1001_effup_attack3", "1001_effup/%04d", 266, 331, 0.05f);
+		CustomTool::createAnimation("1001_role_attack3", "1001_role/%04d", 266, 339, 0.05f);
+		CustomTool::createAnimation("1001_effup_attack3", "1001_effup/%04d", 266, 339, 0.05f);
 
-		CustomTool::createAnimation("1001_role_attack4", "1001_role/%04d", 332, 388, 0.05f);
-		CustomTool::createAnimation("1001_effup_attack4", "1001_effup/%04d", 332, 388, 0.05f);
+		CustomTool::createAnimation("1001_role_attack4", "1001_role/%04d", 340, 388, 0.05f);
+		CustomTool::createAnimation("1001_effup_attack4", "1001_effup/%04d", 340, 350, 0.05f);
+		CustomTool::createAnimation("garen_R_effup", "garen_R_effup/%04d", 0, 38, 0.05f);
 
 
 
 		//角色加载
 		_role = Sprite::createWithSpriteFrameName("1001_role/0040");
-		//_role = Sprite::create("roleanimate/1001_role_0000.jpg");
-		//_role->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
 		_role->setAnchorPoint(Vec2(0.5, 0.5));
 		_role->setPosition(Vec2(_role->getContentSize().width/2, (origin.y + visibleSize.height * 2 / 5)));
-		log("_role size:%f,%f", _role->getContentSize().width, _role->getContentSize().height);
-		log("_role position:%f,%f",_role->getPositionX(),_role->getPositionY());
 		_flip = true;
 		this->addChild(_role, 10);
 
 		_effup = Sprite::createWithSpriteFrameName("1001_effup/0040");
-		//_effup = Sprite::create("roleanimate/1001_effup_0000.jpg");
 		_effup->setName("effup");
 		_effup->setAnchorPoint(Vec2(0.5, 0.5));
-		_effup->setPosition(Vec2(_role->getContentSize().width / 2, _role->getContentSize().height / 2-60));
-		log("_effup size:%f,%f", _effup->getContentSize().width, _effup->getContentSize().height);
-		log("_effup position:%f,%f", _role->getPositionX(), _role->getPositionY());
+		_effup->setPosition(Vec2(_role->getContentSize().width / 2, _role->getContentSize().height / 2));
 		_role->addChild(_effup);
 
-		LabelTTF *_label = LabelTTF::create("skynet", "Consolas", 30);
-		//_label->setContentSize(Size(_role->getTextureRect().size.width, _role->getTextureRect().size.height));
+		Label *_label = Label::createWithSystemFont("skynet", "Arial", 30);
 		_label->setAnchorPoint(Vec2(0.5, 0.5));
 		_label->setPosition(_role->getContentSize().width / 2, (visibleSize.height * 2 / 5)+100);
-		//_label->setPosition(origin.x + _role->getContentSize().width / 2, (origin.y + visibleSize.height * 2 / 5) + _role->getContentSize().height);
-		log("_label size:%f,%f", _label->getContentSize().width, _label->getContentSize().height);
-		log("_label position:%f,%f", _label->getPositionX(), _label->getPositionY());
 		_label->setName("label");
 		_role->addChild(_label);
 
-		//this->onIdle();//角色idle动画
+		this->onIdle();//角色idle动画
 
 		//点击操作
 		_listener_touch = EventListenerTouchOneByOne::create();
@@ -188,8 +178,7 @@ Scene* GameScene::createScene()
 
 void GameScene::update(float time)
 {
-	//_role->getChildByName("effup")->setPosition(_role->getPosition());
-	//_role->getChildByName("label")->setPosition(_role->getPosition());
+
 }
 
 void GameScene::onExit()
@@ -202,18 +191,17 @@ void GameScene::onIdle()
 {
 	_role->stopAllActions();
 	_role->getChildByName("effup")->stopAllActions();
+	_role->getChildByName("effup")->setVisible(false);
 	//获取动画
 	auto animation = CustomTool::getAnimation("1001_role_idle");
 	auto animate = RepeatForever::create(Animate::create(animation));
 
 	_role->runAction(animate);
-	log("onIdle");
 }
 
 bool GameScene::onTouchBegan(Touch* touch, Event* event)
 {
 	Vec2 dest = this->convertToNodeSpace(touch->getLocation());
-	log("log click:%f,%f", dest.x,dest.y);
 	//this->onGo(dest);
 
 	_circle->stopAllActions();
@@ -236,28 +224,26 @@ bool GameScene::onTouchBegan(Touch* touch, Event* event)
 void GameScene::onGo(Vec2 dest)
 {
 	_role->stopAllActions();
+	_role->getChildByName("effup")->stopAllActions();
+	_role->getChildByName("effup")->setVisible(false);
 	_background->stopActionByTag(1);
+
 
 	auto curPos = _role->getPosition();
 
 	//改变面向
 	if (curPos.x > dest.x && _flip)
 	{
-		//log("chang to left");
 		_flip = false;
 		_role->setFlippedX(true);
 		_effup->setFlippedX(true);
-		//_role->getChildByName("effup")->setFlippedX(true);
 	}
 	else if (curPos.x < dest.x && !_flip)
 	{
-		//log("chang to right");
 		_flip = true;
 		_role->setFlippedX(false);
 		_effup->setFlippedX(false);
-		//_role->getChildByName("effup")->setFlippedX(false);
 	}
-	//log("_flip:%d", _flip);
 
 	//时间
 	auto diff = dest - curPos;
@@ -273,41 +259,34 @@ void GameScene::onGo(Vec2 dest)
 	if (_rb <= visibleSize.width / 2){
 		if (_db < (visibleSize.width / 2)){
 			_role_dest = dest;
-			log("position:l l");
 		}
 		else{
 			_role_dest = Vec2(visibleSize.width / 2, dest.y);
 			_bg_dest = Vec2(_background->getPositionX() - (_db - visibleSize.width / 2), 0);
-			log("position:l m");
 		}
 
 	}
 	else if (_rb >= (_background->getContentSize().width - visibleSize.width / 2)){
 		if (_db > (_background->getContentSize().width - visibleSize.width / 2)){
 			_role_dest = dest;
-			log("position:r r");
 		}
 		else{
 			_role_dest = Vec2(visibleSize.width / 2, dest.y);
 			_bg_dest = Vec2(_background->getPositionX() + ((_background->getContentSize().width - visibleSize.width / 2) - _db), 0);
-			log("position:r m");
 		}
 	}
 	else{
 		if (_db<visibleSize.width / 2){
 			_role_dest = Vec2(_db, dest.y);
 			_bg_dest = Vec2(_background->getPositionX() + (_rb - visibleSize.width / 2), 0);
-			log("position:m l");
 		}
 		else if (_db>(_background->getContentSize().width - visibleSize.width / 2)){
 			_role_dest = Vec2(_db - (_background->getContentSize().width - visibleSize.width), dest.y);
 			_bg_dest = Vec2(_background->getPositionX() - ((_background->getContentSize().width - visibleSize.width / 2) - _rb), 0);
-			log("position:m r");
 		}
 		else{
 			_role_dest = Vec2(visibleSize.width / 2, dest.y);
 			_bg_dest = Vec2(_background->getPositionX() - (dest.x - _role->getPositionX()), 0);
-			log("position:m m");
 		}
 	}
 
@@ -322,7 +301,6 @@ void GameScene::onGo(Vec2 dest)
 		auto func = [&]()
 		{
 			this->onIdle();
-			log("move role ok");
 		};
 		auto callback = CallFunc::create(func);
 		auto seq = Sequence::create(move, callback, nullptr);
@@ -334,7 +312,6 @@ void GameScene::onGo(Vec2 dest)
 		auto func2 = [&]()
 		{
 			this->onIdle();
-			log("move bg ok");
 		};
 		auto callback2 = CallFunc::create(func2);
 		auto seq2 = Sequence::create(move2, callback2, nullptr);
@@ -379,9 +356,11 @@ void GameScene::onAttack(Ref* obj)
 	auto animation_effup = CustomTool::getAnimation("1001_effup_attack");
 	auto animate_effup = Animate::create(animation_effup);
 
+	float offset = _flip ? 40 : -40;
+	_role->getChildByName("effup")->setPosition(Vec2(_role->getContentSize().width / 2 + offset, _role->getContentSize().height / 2-20));
+	_role->getChildByName("effup")->setVisible(true);
 	_role->runAction(animate);
 	_role->getChildByName("effup")->runAction(animate_effup);
-	log("onAttack");
 }
 void GameScene::onAttack1(Ref* obj)
 {
@@ -400,9 +379,10 @@ void GameScene::onAttack1(Ref* obj)
 	auto animation_effup = CustomTool::getAnimation("1001_effup_attack1");
 	auto animate_effup = Animate::create(animation_effup);
 
+	_role->getChildByName("effup")->setPosition(Vec2(_role->getContentSize().width / 2, _role->getContentSize().height / 2));
+	_role->getChildByName("effup")->setVisible(true);
 	_role->runAction(animate);
 	_role->getChildByName("effup")->runAction(animate_effup);
-	log("onAttack1");
 }
 void GameScene::onAttack2(Ref* obj)
 {
@@ -421,9 +401,10 @@ void GameScene::onAttack2(Ref* obj)
 	auto animation_effup = CustomTool::getAnimation("1001_effup_attack2");
 	auto animate_effup = Animate::create(animation_effup);
 
+	_role->getChildByName("effup")->setPosition(Vec2(_role->getContentSize().width / 2, _role->getContentSize().height / 2 - 40));
+	_role->getChildByName("effup")->setVisible(true);
 	_role->runAction(animate);
 	_role->getChildByName("effup")->runAction(animate_effup);
-	log("onAttack2");
 }
 void GameScene::onAttack3(Ref* obj)
 {
@@ -442,9 +423,10 @@ void GameScene::onAttack3(Ref* obj)
 	auto animation_effup = CustomTool::getAnimation("1001_effup_attack3");
 	auto animate_effup = Animate::create(animation_effup);
 
+	_role->getChildByName("effup")->setPosition(Vec2(_role->getContentSize().width / 2, _role->getContentSize().height / 2 - 20));
+	_role->getChildByName("effup")->setVisible(true);
 	_role->runAction(animate);
 	_role->getChildByName("effup")->runAction(animate_effup);
-	log("onAttack3");
 }
 void GameScene::onAttack4(Ref* obj)
 {
@@ -460,10 +442,16 @@ void GameScene::onAttack4(Ref* obj)
 	auto callback = CallFunc::create(func);
 	auto animate = Sequence::create(animate_role, callback, nullptr);
 
-	auto animation_effup = CustomTool::getAnimation("1001_effup_attack4");
-	auto animate_effup = Animate::create(animation_effup);
+	auto animation_effup1 = CustomTool::getAnimation("1001_effup_attack4");
+	auto animation_effup2 = CustomTool::getAnimation("garen_R_effup");
+	
+	auto animate_effup1 = Animate::create(animation_effup1);
+	auto animate_effup2 = Animate::create(animation_effup2);
+	auto animate_effup = Sequence::create(animate_effup1, animate_effup2, nullptr);
 
+	float offset = _flip ? 60 : -60;
+	_role->getChildByName("effup")->setPosition(Vec2(_role->getContentSize().width / 2 + offset, _role->getContentSize().height / 2 + 60));
+	_role->getChildByName("effup")->setVisible(true);
 	_role->runAction(animate);
 	_role->getChildByName("effup")->runAction(animate_effup);
-	log("onAttack4");
 }

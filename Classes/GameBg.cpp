@@ -7,7 +7,6 @@ bool GameBg::init()
 	{
 		if (!Sprite::init())
 			return false;
-		log("GameBg::init");
 
 		Size visibleSize = Director::getInstance()->getVisibleSize();
 		Point origin = Director::getInstance()->getVisibleOrigin();
