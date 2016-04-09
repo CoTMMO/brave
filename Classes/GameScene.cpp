@@ -1,7 +1,4 @@
 #include "GameScene.h"
-#include "GameBg.h"
-#include <math.h>
-#include "CustomTool.h"
 
 bool GameScene::init()
 {
@@ -36,6 +33,32 @@ bool GameScene::init()
 		pMenu1->setPosition(Point::ZERO);
 		CC_BREAK_IF(!pMenu1);
 		this->addChild(pMenu1, 1);
+
+		//背景音乐
+		SimpleAudioEngine::getInstance()->preloadBackgroundMusic("sound/scene/music.mp3");
+		SimpleAudioEngine::getInstance()->playBackgroundMusic("sound/scene/music.mp3", true);
+		AppDelegate* app = (AppDelegate *)Application::getInstance();
+		app->setMusic(true);
+
+		//背景音乐开关
+		MenuItemImage *pauseImg = MenuItemImage::create("button/btn_music_open.png", "button/btn_music_open.png");
+		MenuItemImage *playImg = MenuItemImage::create("button/btn_music_close.png", "button/btn_music_close.png");
+		MenuItemToggle* pMusicItem = MenuItemToggle::createWithCallback(CC_CALLBACK_1(GameScene::menuMusicCallback, this), pauseImg, playImg, nullptr);
+		CC_BREAK_IF(!pMusicItem);
+		pMusicItem->setPosition(Vec2(pMusicItem->getContentSize().width / 2, visibleSize.height - pMusicItem->getContentSize().height / 2));
+		pMusicItem->setScale(0.5);
+		Menu* pMenuMusic = Menu::create(pMusicItem, NULL);
+		pMenuMusic->setPosition(Point::ZERO);
+		CC_BREAK_IF(!pMenuMusic);
+		this->addChild(pMenuMusic, 1);
+
+		//音效预加载
+		SimpleAudioEngine::getInstance()->preloadEffect("sound/role/1001/A1.mp3");
+		SimpleAudioEngine::getInstance()->preloadEffect("sound/role/1001/A2.mp3");
+		SimpleAudioEngine::getInstance()->preloadEffect("sound/role/1001/A3.mp3");
+		SimpleAudioEngine::getInstance()->preloadEffect("sound/role/1001/A4.mp3");
+		SimpleAudioEngine::getInstance()->preloadEffect("sound/role/1001/A.mp3");
+
 		//移动按钮
 		MenuItemImage *pLeftButtonItem = CustomTool::createMenuItemImageFromImg("button/button_go.png", "button/button_go.png", CC_CALLBACK_1(GameScene::onLeft, this));
 		CC_BREAK_IF(!pLeftButtonItem);
@@ -50,6 +73,7 @@ bool GameScene::init()
 		pMenuGo->setPosition(Point::ZERO);
 		CC_BREAK_IF(!pMenuGo);
 		this->addChild(pMenuGo, 1);
+
 		//攻击按钮
 		MenuItemImage *pAttackItem = CustomTool::createMenuItemImageFromImg("button/button_attack.png", "button/button_attack.png", CC_CALLBACK_1(GameScene::onAttack, this));
 		CC_BREAK_IF(!pAttackItem);
@@ -112,8 +136,8 @@ bool GameScene::init()
 
 		auto animation_walk = CustomTool::createAnimation("1001_role_walk", "1001_role/%04d", 34, 65, 0.05f);
 
-		auto animation_attack = CustomTool::createAnimation("1001_role_attack", "1001_role/%04d", 66, 188, 0.05f);
-		auto animation_attack_effup = CustomTool::createAnimation("1001_effup_attack", "1001_effup/%04d", 66, 188, 0.05f);
+		auto animation_attack = CustomTool::createAnimation("1001_role_attack", "1001_role/%04d", 66, 87, 0.05f);
+		auto animation_attack_effup = CustomTool::createAnimation("1001_effup_attack", "1001_effup/%04d", 66, 87, 0.05f);
 
 		CustomTool::createAnimation("1001_role_attack1", "1001_role/%04d", 189, 232, 0.05f);
 		CustomTool::createAnimation("1001_effup_attack1", "1001_effup/%04d", 189, 232, 0.05f);
@@ -133,7 +157,7 @@ bool GameScene::init()
 		//角色加载
 		_role = Sprite::createWithSpriteFrameName("1001_role/0040");
 		_role->setAnchorPoint(Vec2(0.5, 0.5));
-		_role->setPosition(Vec2(_role->getContentSize().width/2, (origin.y + visibleSize.height * 2 / 5)));
+		_role->setPosition(Vec2(_role->getContentSize().width/3, (origin.y + visibleSize.height * 2 / 5+20)));
 		_flip = true;
 		this->addChild(_role, 10);
 
@@ -185,6 +209,19 @@ void GameScene::onExit()
 {
 	this->unscheduleUpdate();
 	Layer::onExit();
+}
+
+void GameScene::menuMusicCallback(Ref* pSender){
+	AppDelegate* app = (AppDelegate *)Application::getInstance();
+	
+	if (!app->getMusic()){
+		app->setMusic(true);
+		SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+	}
+	else{
+		app->setMusic(false);
+		SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+	}
 }
 
 void GameScene::onIdle()
@@ -326,16 +363,18 @@ void GameScene::onClose(Ref* obj)
 }
 void GameScene::onLeft(Ref* obj)
 {
-	float _rb = _role->getPositionX() - _background->getPositionX()-200;
+	float _rb = _role->getPositionX() - _background->getPositionX()-100;
 	if (_rb > 0){
-		this->onGo(Vec2(_role->getPositionX() - 200, _role->getPositionY()));
+		float goLen = _rb > 200 ? 200 : _rb;
+		this->onGo(Vec2(_role->getPositionX() - goLen, _role->getPositionY()));
 	}
 }
 void GameScene::onRight(Ref* obj)
 {
-	float _rb = _role->getPositionX() - _background->getPositionX() + 200;
+	float _rb = _role->getPositionX() - _background->getPositionX()+100;
 	if (_rb < _background->getContentSize().width){
-		this->onGo(Vec2(_role->getPositionX() + 200, _role->getPositionY()));
+		float goLen = (_background->getContentSize().width - _rb) > 200 ? 200 : (_background->getContentSize().width - _rb);
+		this->onGo(Vec2(_role->getPositionX() + goLen, _role->getPositionY()));
 	}
 }
 
@@ -361,6 +400,8 @@ void GameScene::onAttack(Ref* obj)
 	_role->getChildByName("effup")->setVisible(true);
 	_role->runAction(animate);
 	_role->getChildByName("effup")->runAction(animate_effup);
+	SimpleAudioEngine::getInstance()->stopAllEffects();
+	SimpleAudioEngine::getInstance()->playEffect("sound/role/1001/A.mp3", false);
 }
 void GameScene::onAttack1(Ref* obj)
 {
@@ -383,6 +424,8 @@ void GameScene::onAttack1(Ref* obj)
 	_role->getChildByName("effup")->setVisible(true);
 	_role->runAction(animate);
 	_role->getChildByName("effup")->runAction(animate_effup);
+	SimpleAudioEngine::getInstance()->stopAllEffects();
+	SimpleAudioEngine::getInstance()->playEffect("sound/role/1001/A1.mp3", false);
 }
 void GameScene::onAttack2(Ref* obj)
 {
@@ -405,6 +448,8 @@ void GameScene::onAttack2(Ref* obj)
 	_role->getChildByName("effup")->setVisible(true);
 	_role->runAction(animate);
 	_role->getChildByName("effup")->runAction(animate_effup);
+	SimpleAudioEngine::getInstance()->stopAllEffects();
+	SimpleAudioEngine::getInstance()->playEffect("sound/role/1001/A2.mp3", false);
 }
 void GameScene::onAttack3(Ref* obj)
 {
@@ -427,6 +472,8 @@ void GameScene::onAttack3(Ref* obj)
 	_role->getChildByName("effup")->setVisible(true);
 	_role->runAction(animate);
 	_role->getChildByName("effup")->runAction(animate_effup);
+	SimpleAudioEngine::getInstance()->stopAllEffects();
+	SimpleAudioEngine::getInstance()->playEffect("sound/role/1001/A3.mp3", false);
 }
 void GameScene::onAttack4(Ref* obj)
 {
@@ -454,4 +501,6 @@ void GameScene::onAttack4(Ref* obj)
 	_role->getChildByName("effup")->setVisible(true);
 	_role->runAction(animate);
 	_role->getChildByName("effup")->runAction(animate_effup);
+	SimpleAudioEngine::getInstance()->stopAllEffects();
+	SimpleAudioEngine::getInstance()->playEffect("sound/role/1001/A4.mp3", false);
 }

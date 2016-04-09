@@ -2,6 +2,12 @@
 #define  _APP_DELEGATE_H_
 
 #include "cocos2d.h"
+#include "SimpleAudioEngine.h"
+#include "StartScene.h"
+#include "GameScene.h"
+
+USING_NS_CC;
+using namespace CocosDenshion;
 
 /**
 @brief    The cocos2d Application.
@@ -32,6 +38,10 @@ public:
     @param  the pointer of the application
     */
     virtual void applicationWillEnterForeground();
+
+	bool _music;
+	bool getMusic();
+	bool setMusic(bool music);
 };
 
 #endif // _APP_DELEGATE_H_

@@ -1,8 +1,4 @@
 #include "AppDelegate.h"
-#include "StartScene.h"
-#include "GameScene.h"
-
-USING_NS_CC;
 
 AppDelegate::AppDelegate() {
 
@@ -44,13 +40,24 @@ void AppDelegate::applicationDidEnterBackground() {
     Director::getInstance()->stopAnimation();
 
     // if you use SimpleAudioEngine, it must be pause
-    // SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+	if (this->getMusic()){
+		SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+	}
 }
 
 // this function will be called when the app is active again
 void AppDelegate::applicationWillEnterForeground() {
-    Director::getInstance()->startAnimation();
-
-    // if you use SimpleAudioEngine, it must resume here
-    // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+	Director::getInstance()->startAnimation();
+	// if you use SimpleAudioEngine, it must resume here
+	if (this->getMusic()){
+		SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+	}
 }
+
+bool AppDelegate::getMusic(){
+	return this->_music;
+};
+bool AppDelegate::setMusic(bool music){
+	this->_music = music;
+	return this->_music;
+};

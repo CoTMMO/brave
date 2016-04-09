@@ -1,9 +1,14 @@
 #ifndef __GameScene__
 #define __GameScene__
 #include "cocos2d.h"
+#include "SimpleAudioEngine.h"
+#include "AppDelegate.h"
 #include "GameBg.h"
+#include <math.h>
+#include "CustomTool.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 class GameScene : public Layer
 {
@@ -22,6 +27,7 @@ public:
 	static Scene* createScene();
 	CREATE_FUNC(GameScene);
 	bool onTouchBegan(Touch* touch, Event* event);
+	void menuMusicCallback(Ref* obj);
 	void onClose(Ref* obj);
 	void onLeft(Ref* obj);
 	void onRight(Ref* obj);
