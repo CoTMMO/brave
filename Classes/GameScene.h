@@ -15,7 +15,10 @@ class GameScene : public Layer
 private:
 	void update(float time);
 	virtual void onExit();
+	
 	GameBg* _background;
+	float _level;
+	//AppDelegate* _app;
 	Sprite* _role;
 	Sprite* _effup;
 	bool _flip;
@@ -28,6 +31,7 @@ public:
 	CREATE_FUNC(GameScene);
 	bool onTouchBegan(Touch* touch, Event* event);
 	void menuMusicCallback(Ref* obj);
+	void menuSoundCallback(Ref* obj);
 	void onClose(Ref* obj);
 	void onLeft(Ref* obj);
 	void onRight(Ref* obj);

@@ -56,8 +56,15 @@ void AppDelegate::applicationWillEnterForeground() {
 
 bool AppDelegate::getMusic(){
 	return this->_music;
-};
+}
 bool AppDelegate::setMusic(bool music){
 	this->_music = music;
 	return this->_music;
-};
+}
+bool AppDelegate::getSound(){
+	return this->_sound;
+}
+bool AppDelegate::setSound(bool sound){
+	this->_sound = sound;
+	return this->_sound;
+}

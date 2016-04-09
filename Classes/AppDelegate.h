@@ -42,6 +42,9 @@ public:
 	bool _music;
 	bool getMusic();
 	bool setMusic(bool music);
+	bool _sound;
+	bool getSound();
+	bool setSound(bool sound);
 };
 
 #endif // _APP_DELEGATE_H_
